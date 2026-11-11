@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sarai Group — corporate landing page
 
-## Getting Started
+Next.js 16 (App Router) · React 19 · Tailwind CSS 4 · react-icons (Phosphor set). Light theme, fully static.
 
-First, run the development server:
+## Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # production build (all routes prerendered)
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Where things live
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Path | What |
+| --- | --- |
+| `src/content/site.ts` | **All copy, links and section data** (from the homepage content inventory). Edit text here. |
+| `src/app/globals.css` | Design tokens (`@theme`: colors in OKLCH, fluid type scale, easing) and motion styles. |
+| `src/components/sections/*` | Hero (globe), Capabilities, Approach (lifecycle), Expertise & benefits, Case studies, Services. |
+| `src/components/layout/*` | Header (sticky, scroll-spy, accessible mobile menu), Footer, Logo. |
+| `src/components/illustrations/*` | Hero revolving globe (WebGL via `cobe`, CSS fallback). |
+| `src/assets/case-studies/*` | Product logos and screenshots exported from the Sarai Platforms Figma file (served optimised via `next/image`). |
+| `src/components/reactbits/*` | React Bits components adapted for this site (see below). |
+| `src/app/opengraph-image.tsx`, `icon.svg`, `robots.ts`, `sitemap.ts` | SEO assets. JSON-LD `Organization` data is in `src/app/page.tsx`. |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## React Bits adaptations
 
-## Learn More
+| Component | Used in | Notes |
+| --- | --- | --- |
+| BlurText | Hero headline | CSS-only, server-rendered, so the headline paints without waiting for JS. |
+| SpotlightCard | Capability cards | Pointer-following glow via CSS variables (no re-renders). |
+| CountUp | Lifecycle week labels | Final value is server-rendered; animates once on first view. |
+| AnimatedContent | Section reveals (`.reveal`) | Native CSS scroll-driven animations; unsupported browsers simply show content. |
+| GlareHover | Case-study media | Single soft sheen on hover. |
 
-To learn more about Next.js, take a look at the following resources:
+Every animation is disabled under `prefers-reduced-motion: reduce`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Accessibility
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Skip link, landmark regions, labelled sections, one `h1` with logical heading order, visible `:focus-visible` rings, 44px+ touch targets, Escape-to-close mobile menu with focus return, screen-reader text for icon-only and external links, AA contrast for all text tokens.
 
-## Deploy on Vercel
+## Notes and placeholders
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Logo** — the official Sarai logo (Figma › Sarai) lives in `src/components/layout/Logo.tsx` as inline SVG; `src/app/icon.svg` uses its "S" mark.
+- **Privacy Policy / Terms & Conditions** — placeholders on the current site; routes exist at `/privacy-policy` and `/terms-and-conditions` with a "being prepared" notice (set to `noindex`).
+- **Copyright year** — `site.copyrightYear` in `src/content/site.ts` (kept static so the page fully prerenders).

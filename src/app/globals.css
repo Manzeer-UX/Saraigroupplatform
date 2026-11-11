@@ -1,26 +1,372 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ------------------------------------------------------------------
+   Design tokens
+   Navy-blue brand on a cool, light canvas. Navy carries primary
+   actions and feature sections; azure is the single accent. Neutrals
+   are tinted toward the brand hue (never pure grey) so the palette
+   reads as one family. All text pairings meet WCAG 2.2 AA contrast.
+------------------------------------------------------------------- */
+@theme {
+  /* Neutrals */
+  --color-paper: oklch(0.985 0.004 250);
+  --color-surface: oklch(1 0 0);
+  --color-sunken: oklch(0.966 0.008 255);
+  --color-line: oklch(0.915 0.011 258);
+  --color-line-strong: oklch(0.855 0.016 258);
+
+  /* Ink (body text) */
+  --color-ink: oklch(0.22 0.07 265);
+  --color-ink-soft: oklch(0.39 0.05 264);
+  --color-muted: oklch(0.5 0.035 262);
+
+  /* Navy brand (buttons, feature sections, footer) */
+  --color-navy: oklch(0.29 0.1 264);
+  --color-navy-deep: oklch(0.22 0.075 265);
+  --color-navy-hover: oklch(0.36 0.13 264);
+
+  /* Azure accent: decorative (accent), text on light (accent-ink),
+     tint (accent-soft), text/graphics on navy (accent-light) */
+  --color-accent: oklch(0.64 0.15 248);
+  --color-accent-ink: oklch(0.47 0.16 260);
+  --color-accent-soft: oklch(0.95 0.028 250);
+  --color-accent-light: oklch(0.84 0.08 240);
+
+
+  /* Fluid type scale (modular, ~1.25 at small sizes, wider at display) */
+  --text-display: clamp(2.375rem, 1.5rem + 3.1vw, 4.25rem);
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.038em;
+  --text-title: clamp(1.875rem, 1.4rem + 1.6vw, 2.875rem);
+  --text-title--line-height: 1.06;
+  --text-title--letter-spacing: -0.03em;
+  --text-heading: clamp(1.1875rem, 1.1rem + 0.35vw, 1.4375rem);
+  --text-heading--line-height: 1.25;
+  --text-heading--letter-spacing: -0.015em;
+  --text-lead: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --text-lead--line-height: 1.6;
+
+  /* Motion */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --shadow-soft: 0 1px 2px oklch(0.29 0.1 264 / 0.05), 0 8px 24px -12px oklch(0.29 0.1 264 / 0.14);
+  --shadow-lift: 0 2px 4px oklch(0.29 0.1 264 / 0.05), 0 28px 56px -24px oklch(0.29 0.1 264 / 0.3);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ------------------------------------------------------------------
+   Base
+------------------------------------------------------------------- */
+@layer base {
+  html {
+    color-scheme: light;
+    scroll-padding-top: 6.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink-soft);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-soft);
+    color: var(--color-ink);
+  }
+
+  /* One consistent, high-contrast focus indicator (WCAG 2.4.7 / 2.4.13) */
+  :focus-visible {
+    outline: 2px solid var(--color-navy);
+    outline-offset: 3px;
+    border-radius: 0.5rem;
+  }
+
+  /* Navy feature sections: switch the focus ring to a light colour */
+  .on-dark :focus-visible {
+    outline-color: var(--color-accent-light);
+  }
+
+  [id] {
+    scroll-margin-top: 6.5rem;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------------
+   Utilities
+------------------------------------------------------------------- */
+@utility dot-grid {
+  background-image: radial-gradient(
+    oklch(0.29 0.1 264 / 0.12) 1px,
+    transparent 1.2px
+  );
+  background-size: 22px 22px;
+}
+
+@utility fade-mask-b {
+  mask-image: linear-gradient(to bottom, black 40%, transparent);
+}
+
+@utility fade-mask-radial {
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, black 30%, transparent 75%);
+}
+
+/* Stretch a link's hit-area over its positioned card */
+@utility stretched-link {
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Motion
+   Everything below is opt-in via prefers-reduced-motion:
+   no-preference. With reduced motion, content renders in its final
+   state with no transitions beyond simple colour changes.
+------------------------------------------------------------------- */
+
+/* BlurText (adapted from React Bits) — CSS-only so the headline paints
+   without waiting for JavaScript. */
+@keyframes blur-in {
+  0% {
+    opacity: 0;
+    filter: blur(12px);
+    transform: translate3d(0, -0.32em, 0);
+  }
+  55% {
+    opacity: 0.6;
+    filter: blur(4px);
+    transform: translate3d(0, 0.04em, 0);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes grow-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes scan {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(150px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .blur-word {
+    display: inline-block;
+    animation: blur-in 1s var(--ease-out-quart) both;
+    animation-delay: calc(var(--i, 0) * 85ms + 120ms);
+    will-change: transform, filter, opacity;
+  }
+
+  .rise-in {
+    animation: rise-in 0.9s var(--ease-out-expo) both;
+    animation-delay: var(--delay, 0ms);
+  }
+
+  .draw-path {
+    stroke-dasharray: var(--len, 1200);
+    stroke-dashoffset: var(--len, 1200);
+    animation: draw 1.8s var(--ease-out-quart) forwards;
+    animation-delay: var(--delay, 0ms);
+  }
+
+  .pop-in {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pop 0.6s var(--ease-out-expo) both;
+    animation-delay: var(--delay, 0ms);
+  }
+
+  .scan-line {
+    animation: scan 3.6s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+
+  .group:hover .scan-line,
+  .group:focus-within .scan-line {
+    animation-play-state: running;
+  }
+
+  /* Scroll-linked reveal (AnimatedContent, adapted from React Bits).
+     Uses native scroll-driven animations: zero JavaScript, and
+     browsers without support simply show the content. */
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: rise-in linear both;
+      animation-timeline: view();
+      animation-range: entry calc(var(--stagger, 0) * 6%) entry calc(70% + var(--stagger, 0) * 6%);
+    }
+
+    .track-fill-x {
+      transform-origin: left center;
+      animation: grow-x linear both;
+      animation-timeline: view();
+      animation-range: entry 60% cover 55%;
+    }
+
+    .track-fill-y {
+      transform-origin: center top;
+      animation: grow-y linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 60%;
+    }
+  }
+}
+
+/* GlareHover (adapted from React Bits) — a single soft sheen that
+   sweeps across media on hover/focus. */
+.glare-hover {
+  position: relative;
+  isolation: isolate;
+}
+
+.glare-hover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    -45deg,
+    transparent 60%,
+    oklch(1 0 0 / 0.55) 70%,
+    transparent 80%
+  );
+  background-size: 250% 250%;
+  background-position: 100% 100%;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .group:hover .glare-hover::after {
+    opacity: 1;
+    background-position: 0% 0%;
+    transition:
+      background-position 0.9s var(--ease-out-quart),
+      opacity 0.2s ease;
+  }
+}
+
+/* SpotlightCard (adapted from React Bits) — pointer-following glow. */
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(
+    28rem circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    var(--spot-color, oklch(0.64 0.15 248 / 0.12)),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-out-quart);
+}
+
+@media (hover: hover) {
+  .spotlight-card:hover::before {
+    opacity: 1;
+  }
+}
+
+.spotlight-card:focus-within::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
